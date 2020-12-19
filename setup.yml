@@ -1,0 +1,34 @@
+---
+- hosts: my_client_host
+  become: true
+  become_user: root
+ 
+  tasks:
+
+    - name: Install Prerequisites
+      apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+      loop: [ 'aptitude' ]
+
+    - name: Install soft
+      apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+      loop: [ 'curl','vim','mc','gcc','libbz2-dev','libreadline-dev','libssl-dev','make','zlib1g-dev']
+    
+    - name: Install soft for Docker and Pytnon
+      apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+      loop: [ 'apt-transport-https','ca-certificates','gnupg2','software-properties-common','python3-pip','python3-virtualenv','python3-dev', 'virtualenv','python3-setuptools' ]
+   
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+    
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest 
+    
+    - name: Install docker-compose
+      apt: update_cache=yes name=docker-compose state=latest   
